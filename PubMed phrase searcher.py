@@ -19,7 +19,7 @@ import pandas as pd
 #gets the IDs of the articles; max of 50 articles; takes a query, in this case machine learning; database is pubmed
 def search(query):      
     Entrez.email = 'eli.krasnoff@gmail.com'
-    handle = Entrez.esearch(db="pubmed", term=query, retmax=50)
+    handle = Entrez.esearch(db="pubmed", term=query, retmax=100)
     record = Entrez.read(handle)
     handle.close()
     return record
@@ -79,7 +79,7 @@ def getTitle(detailsDict):
 # In[137]:
 
 
-record = search('machine learning[title][abstract] AND 2021/01/01:2021/12/31[EDAT]') #the title of the paper and date constraints
+record = search('machine learning[title/abstract] AND 2021/01/01:2021/12/31[EDAT]') #the title of the paper and date constraints
 terms = ['code', 'github'] #the desired tearms to be searched for in each paper
 
 IdList = record['IdList'] #list of all the IDs
@@ -94,8 +94,9 @@ df = pd.DataFrame()
 df['ID'] = titleDict.keys()
 df['Title'] = titleDict.values()
 df['DOI'] = doiDict.values()
-df[terms[0] + ' count'] = [x[terms[0]] for x in countDict.values()]
-df[terms[1] + ' count '] = [x[terms[1]] for x in countDict.values()]
+for term in terms:
+    df[term + ' count'] = [x[term] for x in countDict.values()]
+
 
 display(df)
 
